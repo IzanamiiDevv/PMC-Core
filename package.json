@@ -1,0 +1,38 @@
+{
+  "name": "pmc",
+  "version": "1.0.0",
+  "description": "PMC Core is a powerful Command Line Interface tool designed for developers to efficiently manage and organize their project workspaces. As the next evolution of the original PMC, it offers a refined structure, improved performance, and new features to supercharge your development workflow.",
+  "main": "pmc.js",
+  "bin": "pmc.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "pkg ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IzanamiiDevv/PMC-Core.git"
+  },
+  "pkg": {
+    "assets": [
+      "node_modules/inquirer/**/*"
+    ],
+    "scripts": [
+      "pmc.js"
+    ],
+    "targets": [
+      "node18-win-x64"
+    ],
+    "outputPath": "dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IzanamiiDevv/PMC-Core/issues"
+  },
+  "homepage": "https://github.com/IzanamiiDevv/PMC-Core#readme",
+  "dependencies": {
+    "inquirer": "^8.2.6"
+  }
+}
