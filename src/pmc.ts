@@ -1,21 +1,31 @@
-const TypeValue = [
-    "input", "number", "confirm",
-    "list", "rawlist", "expand",
-    "checkbox", "password", "editor"
-] as const;
-type PromptType = typeof TypeValue[number];
-
-interface PromptParameter {
-    type: PromptType;
-    name: string;
-    message: string | Function;
-    default?: string | number | boolean | Array<any> |Function;
-    choices?: Array<any> | Function;
-}
-
-interface Input {
-    prompt: (questions: PromptParameter) => Promise<any>
-}
-
 process.removeAllListeners('warning');
-const Input: Input = require("inquirer");
+//import { createSpinner } from "nanospinner";
+import { CLI, Token, TokenType } from "./pmc.types";
+import PMC_Error from "./pmc.error";
+
+async function Main(args: Token[]): Promise<void> {
+    const cli: CLI = require("inquirer");
+    args.forEach((token: Token) => {
+        console.log(token);
+    });
+}
+Main(args_lexer(process.argv));
+
+function args_lexer(args: string[]): Token[] {
+    const methods = ["mark","scan","del","code","new", "create"] as const;
+    const Tokenized: Token[] = [];
+    (methods.includes(args[2] as typeof methods[number])) ? Tokenized.push({
+        token: args[2],
+        type: TokenType.Argument
+    }) : PMC_Error.Syntax(`Cant find ${args[2]} in methods`);
+    args.splice(0, 3);
+    const patterns: [RegExp, TokenType][] = [
+        
+    ];
+
+    args.forEach((token: string, index: number) => {
+    });
+
+    if(Tokenized.length == 0) PMC_Error.Syntax("Invalid Syntax.");
+    return Tokenized;
+}
