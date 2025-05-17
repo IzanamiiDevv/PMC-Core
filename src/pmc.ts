@@ -26,19 +26,20 @@ function args_lexer(args: string[]): Token[] {
         if(index == 0) return;
 
         if(_token.startsWith("--")) {
-            const vlop = ["--test"] as const;
+            const token: string[] = ["test"];
+            const vlop = (token.map(t => `--${t}`)) as readonly string[];
             const svlop = new Set(vlop);
             (svlop.has(_token as (typeof vlop)[number])) ? (args as unknown as Token[])[index] = {
                 token: _token,
                 type: TokenType.LOption
-            } as Token : PMC_Error.Syntax(`Cant find ${_token} in valid long flag`);
+            } as Token : PMC_Error.Syntax(`Cant find ${_token} in valid global flag`);
             return;
         }
 
         if(_token.startsWith("-")) {
-            const vop = ["-test"] as const;
+            const token: string[] = ["test"];
+            const vop = (token.map(t => `-${t}`)) as readonly string[];
             const svop = new Set(vop);
-
             (svop.has(_token as (typeof vop)[number])) ? (args as unknown as Token[])[index] = {
                 token: _token,
                 type: TokenType.Option
