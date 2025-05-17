@@ -12,20 +12,45 @@ async function Main(args: Token[]): Promise<void> {
 Main(args_lexer(process.argv));
 
 function args_lexer(args: string[]): Token[] {
-    const methods = ["mark","scan","del","code","new", "create"] as const;
-    const Tokenized: Token[] = [];
-    (methods.includes(args[2] as typeof methods[number])) ? Tokenized.push({
-        token: args[2],
-        type: TokenType.Argument
-    }) : PMC_Error.Syntax(`Cant find ${args[2]} in methods`);
-    args.splice(0, 3);
-    const patterns: [RegExp, TokenType][] = [
-        
-    ];
+    if(args.length == 2) PMC_Error.Syntax("Invalid Syntax.");
+    args.splice(0, 2);
+    const validMethod = ["mark","scan","del","code","new", "create"] as const;
+    const methods = new Set(validMethod);
 
-    args.forEach((token: string, index: number) => {
+    (methods.has(args[0] as (typeof validMethod)[number])) ? (args as unknown as Token[])[0] = {
+        token: args[0],
+        type: TokenType.Argument
+    } as Token : PMC_Error.Syntax(`Cant find ${args[0]} in methods`);
+
+    args.forEach((_token: string, index: number) => {
+        if(index == 0) return;
+
+        if(_token.startsWith("--")) {
+            const vlop = ["--test"] as const;
+            const svlop = new Set(vlop);
+            (svlop.has(_token as (typeof vlop)[number])) ? (args as unknown as Token[])[index] = {
+                token: _token,
+                type: TokenType.LOption
+            } as Token : PMC_Error.Syntax(`Cant find ${_token} in valid long flag`);
+            return;
+        }
+
+        if(_token.startsWith("-")) {
+            const vop = ["-test"] as const;
+            const svop = new Set(vop);
+
+            (svop.has(_token as (typeof vop)[number])) ? (args as unknown as Token[])[index] = {
+                token: _token,
+                type: TokenType.Option
+            } as Token : PMC_Error.Syntax(`Cant find ${_token} in valid flag`);
+            return;
+        }
+
+        (args as unknown as Token[])[index] = {
+            token: _token,
+            type: TokenType.Value
+        } as Token;
     });
 
-    if(Tokenized.length == 0) PMC_Error.Syntax("Invalid Syntax.");
-    return Tokenized;
+    return (args as unknown as Token[]);
 }
