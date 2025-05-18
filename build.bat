@@ -58,7 +58,7 @@ call :loading
 
 REM Step 6: Compile Backend source code.
 echo [6/%STEPS%] Compiling Server using "g++"...
-g++ server/main.cpp -o bin/pmc_server.exe > nul 2>&1
+powershell -Command "g++ server/main.cpp $(Get-ChildItem server/src -Filter '*.cpp' | ForEach-Object { $_.FullName }) -I./server/incl -o bin/pmc_server.exe -std=c++17 -lws2_32 -mwindows" > nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo Error on compiling backend server using "g++".
     exit /b 1
