@@ -8,5 +8,9 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "PMC[Installer]"  // ✅ exclude this folder
+  ]
 }
