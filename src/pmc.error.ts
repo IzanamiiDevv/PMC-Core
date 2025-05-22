@@ -3,6 +3,11 @@ class PMC_Error {
         console.error(`Syntax Error: ${message}`);
         process.exit(1);
     }
+
+    public static RunTime(message: string): void {
+        console.error(`Runtime Error: ${message}`);
+        process.exit(1);
+    }
 }
 
 export default PMC_Error;
