@@ -1,27 +1,39 @@
 process.removeAllListeners('warning');
-import { CLI, Token, TokenType } from "./pmc.types";
 import PMC_Error from "./pmc.error";
 import os from "os";
 if(os.platform() != 'win32') PMC_Error.RunTime("Invalid OS");
+
+import { readFileSync } from "fs";
+import path from "path";
+import { parse } from "dotenv";
+const envPath = path.join(__dirname, ".env");
+const envBuffer = readFileSync(envPath);
+const parsedEnv = parse(envBuffer);
+for (const key in parsedEnv) process.env[key] = parsedEnv[key];
+if(process.env.PORT == undefined) PMC_Error.RunTime("Undefined Server Port");
+
+import { CLI, Token, TokenType } from "./pmc.types";
 import { Commands } from "./pmc.cmd";
-import { execFile } from "child_process";
-import { createSpinner } from "nanospinner";
 
 async function Main(args: Token[]): Promise<void> {
-    const cli: CLI = require("inquirer");
-
+    //TODO: FIX Server Startup
     try {
         const response = await fetch(`http://localhost:${process.env.PORT}/`);
         console.log(`Server is running on port ${process.env.PORT}. Status code: ${response.status}`);
     } catch (error) {
-        console.log(`Server not running on port ${process.env.PORT}. Starting pmc_server.exe...`);
+        const { execFile } = await import("child_process");
+        const { createSpinner } = await import("nanospinner");
 
+        const spinner = createSpinner(`Starting pmc_server.exe...`).start()
         execFile('pmc_server.exe', (err) => {
             if (err) PMC_Error.RunTime("Failed to start pmc_server.exe");
-            console.log('pmc_server.exe started successfully.');
+            spinner.success({
+                text: "pmc_server.exe started successfully."
+            });
         });
     }
-    
+
+    const cli: CLI = require("inquirer");
     args.forEach((token: Token) => {
         console.log(token);
     });

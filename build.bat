@@ -31,6 +31,7 @@ call :loading
 
 REM Step 3: Bundle into standalone executable using pkg
 echo [3/%STEPS%] Creating executable using npx pkg...
+copy /Y .\prototype\.env .\temp\.env >nul 2>&1
 start "" /wait cmd /c "npx pkg ."
 if %ERRORLEVEL% neq 0 (
     echo Error on creating executable using "npx pkg".

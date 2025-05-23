@@ -16,7 +16,8 @@
   },
   "pkg": {
     "assets": [
-      "node_modules/inquirer/**/*"
+      "node_modules/inquirer/**/*",
+      "temp/.env"
     ],
     "scripts": "temp/**/*.js",
     "targets": [
@@ -32,6 +33,7 @@
   },
   "homepage": "https://github.com/IzanamiiDevv/PMC-Core#readme",
   "dependencies": {
+    "dotenv": "^16.5.0",
     "inquirer": "^8.2.6",
     "nanospinner": "^1.2.2"
   },
