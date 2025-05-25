@@ -41,9 +41,9 @@ call :loading
 
 REM Step 4: Copy the generated pmc.exe to the "dist" directory
 echo [4/%STEPS%] Copying pmc.exe to "dist" directory...
-copy /Y .\bin\pmc.exe .\dist\pmc.exe >nul 2>&1
+copy /Y .\bin\pmc_app.exe .\dist\pmc_app.exe >nul 2>&1
 if %ERRORLEVEL% neq 0 (
-    echo Error on copying pmc.exe to "dist" directory.
+    echo Error on copying pmc_app.exe to "dist" directory.
     exit /b 1
 )
 call :loading

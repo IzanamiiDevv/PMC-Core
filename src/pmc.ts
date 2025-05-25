@@ -16,24 +16,8 @@ import { CLI, Token, TokenType } from "./pmc.types";
 import { Commands } from "./pmc.cmd";
 
 async function Main(args: Token[]): Promise<void> {
-    //TODO: FIX Server Startup
-    try {
-        const response = await fetch(`http://localhost:${process.env.PORT}/`);
-        console.log(`Server is running on port ${process.env.PORT}. Status code: ${response.status}`);
-    } catch (error) {
-        const { execFile } = await import("child_process");
-        const { createSpinner } = await import("nanospinner");
-
-        const spinner = createSpinner(`Starting pmc_server.exe...`).start()
-        execFile('pmc_server.exe', (err) => {
-            if (err) PMC_Error.RunTime("Failed to start pmc_server.exe");
-            spinner.success({
-                text: "pmc_server.exe started successfully."
-            });
-        });
-    }
-
     const cli: CLI = require("inquirer");
+    
     args.forEach((token: Token) => {
         console.log(token);
     });

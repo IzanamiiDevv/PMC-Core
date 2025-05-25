@@ -1,5 +1,5 @@
 {
-  "name": "pmc",
+  "name": "pmc_app",
   "version": "1.0.0",
   "description": "PMC Core is a powerful Command Line Interface tool designed for developers to efficiently manage and organize their project workspaces. As the next evolution of the original PMC, it offers a refined structure, improved performance, and new features to supercharge your development workflow.",
   "main": "temp/pmc.js",
