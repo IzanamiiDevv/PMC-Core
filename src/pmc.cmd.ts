@@ -1,43 +1,3 @@
-/*
-
-command:
-    create:
-        required: -git, -local, -name
-        optional: -language, -lang
-        syntax: pmc create -name <name> <[-git <link>] or [-local]> <optional>
-    
-    list:
-        optional: -language, -lang, -git, -local, -name, -status -tag
-        syntax: pmc list <optional>
-    
-    delete:
-        optional: -name, -id
-        syntax: pmc delete <optional>
-    
-    code:
-        optional: -name, -id
-        syntax: pmc code <optional>
-    
-    set:
-        required: -name, -id
-        optional: -status, -language, -lang
-        syntax: pmc set <[-name <name>] or [-id <id>]> <optional>
-    
-    help:
-        optional: commands
-        syntax: pmc help <optional>
-    
-    backup:
-        required: -name, -id
-        optional: -o, -out, -zip
-        syntax: pmc backup <[-name <name>] or [-id <id>]> <optional>
-    
-    tag:
-        required: -name, -id, -create, -remove
-        syntax: pmc tag <[-name <name>] or [-id <id>]> <[-create <tagname>] or [-remove <tagname>]>
-
-*/
-
 interface Command {
     name: string,
     flags?: {
@@ -53,7 +13,7 @@ const Commands = new Set<Command>();
 Commands.add({
     name: "create",
     flags: {
-        required: ["environment", "name"],
+        required: ["git", "local", "name"],
         optional: ["language", "lang"]
     },
     syntax_string: "pmc create -name <name> <[-git <link>] or [-local]> <optional>",
@@ -63,7 +23,7 @@ Commands.add({
 Commands.add({
     name: "list",
     flags: {
-        optional: ["language", "lang", "environment", "status", "name", "tag"]
+        optional: ["language", "lang", "git", "local", "status", "name", "tag"]
     },
     syntax_string: "pmc list <optional>",
     description: "Lists all managed projects, optionally filtered by various flags."
@@ -121,6 +81,15 @@ Commands.add({
     },
     syntax_string: "pmc tag <[-name <name>] or [-id <id>]> <[-create <tagname>] or [-remove <tagname>]>",
     description: "Adds or removes tags from a project."
+});
+
+Commands.add({
+    name: "commit",
+    flags: {
+        optional: ["scope", "type", "mess", "gflag"]
+    },
+    syntax_string: "pmc commit <optional>",
+    description: "Commit a Project with"
 });
 
 export { Commands, Command };

@@ -1,0 +1,46 @@
+{
+    "git_cmd" : null,
+    "location": null,
+    "types": [
+        {
+            "type": "feat",
+            "desc": "New feature"
+        },
+        {
+            "type": "fix",
+            "desc": "Bug fix"
+        },
+        {
+            "type": "chore",
+            "desc": "Changes to build process, tools, or dependencies (non-functional maintenance)"
+        },
+        {
+            "type": "docs",
+            "desc": "Documentation only changes"
+        },
+        {
+            "type": "style",
+            "desc": "Code style changes (white-space, formatting, missing semicolons, etc.)"
+        },
+        {
+            "type": "refactor",
+            "desc": "Code change that neither fixes a bug nor adds a feature"
+        },
+        {
+            "type": "test",
+            "desc": "Adding or modifying tests"
+        },
+        {
+            "type": "perf",
+            "desc": "Performance improvements"
+        },
+        {
+            "type": "build",
+            "desc": "Changes that affect the build system or external dependencies"
+        },
+        {
+            "type": "ci",
+            "desc": "Changes to CI/CD configuration files and scripts"
+        }
+    ]
+}

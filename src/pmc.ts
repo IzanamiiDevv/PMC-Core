@@ -12,15 +12,29 @@ const parsedEnv = parse(envBuffer);
 for (const key in parsedEnv) process.env[key] = parsedEnv[key];
 if(process.env.PORT == undefined) PMC_Error.RunTime("Undefined Server Port");
 
-import { CLI, Token, TokenType } from "./pmc.types";
+import { CLI, Token, TokenType, StructuredToken, KeyValue } from "./pmc.types";
 import { Commands } from "./pmc.cmd";
 
 async function Main(args: Token[]): Promise<void> {
+    const s_token: StructuredToken = args_parse(args);
+
     const cli: CLI = require("inquirer");
+    /*
+    const fs = await import("fs");
     
-    args.forEach((token: Token) => {
-        console.log(token);
+    fs.readFile('./git.config.json', 'utf8', (err, jsonString) => {
+        if (err) PMC_Error.RunTime("");
+        try {
+            const data = JSON.parse(jsonString);
+        } catch (err) {
+            console.error('Error parsing JSON:', err);
+        }
     });
+    */
+
+    
+
+    console.log(s_token);
 }
 Main(args_lexer(process.argv));
 
@@ -74,4 +88,33 @@ function args_lexer(args: string[]): Token[] {
     });
 
     return (args as unknown as Token[]);
+}
+
+function args_parse(args: Token[]): StructuredToken {
+    const temp: StructuredToken = {
+        command: args[0].token,
+        required: [],
+        optional: [],
+    };
+
+    const flags = new Set<string>();
+    for(const command of Commands) {
+        if(command.name == args[0].token) {
+            const required = command.flags?.required ?? [];
+            const optional = command.flags?.optional ?? [];
+            required.forEach(item => flags.add(item));
+            optional.forEach(item => flags.add(item));
+        }
+    }
+
+    for (let i = 1; i < args.length; i++) {
+        const buffer = args[i].token.replace(/-/g,'');
+        if(!flags.has(buffer)) PMC_Error.Syntax(`Command "${args[0].token}" has no flags called "${buffer}"`);
+        (args[i].type === TokenType.LOption ? temp.required : temp.optional).push({
+            flag: buffer,
+            value: (i + 1 < args.length && args[i + 1].type === TokenType.Value) ? args[++i].token : undefined
+        });
+    }
+            
+    return temp;
 }
