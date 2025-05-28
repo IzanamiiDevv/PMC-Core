@@ -86,7 +86,7 @@ Commands.add({
 Commands.add({
     name: "commit",
     flags: {
-        optional: ["scope", "type", "mess", "gflag"]
+        optional: ["scope", "type"]
     },
     syntax_string: "pmc commit <optional>",
     description: "Commit a Project with"

@@ -12,29 +12,101 @@ const parsedEnv = parse(envBuffer);
 for (const key in parsedEnv) process.env[key] = parsedEnv[key];
 if(process.env.PORT == undefined) PMC_Error.RunTime("Undefined Server Port");
 
-import { CLI, Token, TokenType, StructuredToken, KeyValue } from "./pmc.types";
+import { CLI, Token, TokenType, StructuredToken, KeyValue, GITCONFIGJSON } from "./pmc.types";
 import { Commands } from "./pmc.cmd";
 
 async function Main(args: Token[]): Promise<void> {
     const s_token: StructuredToken = args_parse(args);
 
     const cli: CLI = require("inquirer");
-    /*
-    const fs = await import("fs");
-    
-    fs.readFile('./git.config.json', 'utf8', (err, jsonString) => {
-        if (err) PMC_Error.RunTime("");
-        try {
-            const data = JSON.parse(jsonString);
-        } catch (err) {
-            console.error('Error parsing JSON:', err);
+    switch (s_token.command) {
+        case "new": {
+
         }
-    });
-    */
 
-    
+        case "commit": {
+            const fs = await import("fs/promises");
+            
+            try {
+                const json_data = await fs.readFile('./git.config.json', 'utf8');
+                const data: GITCONFIGJSON = JSON.parse(json_data);
+                const commitbuffer: {
+                    [key: string]: string | undefined,
+                } = {"scope": undefined, "type": undefined};
+                if(data.git_cmd == null || !run_git(data.git_cmd)) {
+                    const { exec } = await import("child_process");
+                    const { promisify } = await import("util");
+                    const execPromise = promisify(exec);
 
-    console.log(s_token);
+                    const shellscript = `powershell -command "& { Add-Type -AssemblyName System.Windows.Forms; $f = New-Object System.Windows.Forms.FolderBrowserDialog; $f.Description = 'Select Git Folder'; $f.ShowNewFolderButton = $false; if ($f.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { $f.SelectedPath }}"`;
+                    const { stdout, stderr } = await execPromise(shellscript);
+                    if(stderr) throw new Error("Cant execute file selector");
+                    const folderPath = stdout.trim();
+                    const isValid = await run_git(`${folderPath}/cmd`);
+                    if(!isValid) throw new Error("Invalid git path");
+                    data.git_cmd = `${folderPath}\\cmd`;
+                    await fs.writeFile('./git.config.json', JSON.stringify(data));
+                }
+
+                s_token.optional.forEach(({flag, value}) => {
+                    if(value == undefined) PMC_Error.RunTime(`Undefined value of ${flag}`);
+                    if(flag == "type" && !data.types.map(({type}) => type).includes(value as string)) PMC_Error.Syntax(`"${value}" is not a commit type`);
+                    commitbuffer[flag] = value;
+                });
+                const entries = Object.entries(commitbuffer);
+                for (const [key, value] of entries) {
+                    if(value != undefined) continue;
+                    const response = await cli.prompt({
+                        name: "data",
+                        message: (key == "scope") ? "Scope:" : "Select Commit Type:",
+                        type: (key == "scope") ? "input" : "list",
+                        default: (key == "scope") ? "Project" : undefined,
+                        choices: (key == "type") ? data.types.map(({type, desc}) => `${type}: ${desc}`) : undefined
+                    });
+
+                    commitbuffer[key] = (key == "type") ? (response.data as string).split(":")[0].trim() : response.data;
+                }
+
+                const request_message = await cli.prompt({
+                    name: "data",
+                    message: "Commit Message:",
+                    type: "input"
+                });
+                let message: string = request_message.data;
+
+                const request_argv = await cli.prompt({
+                    name: "data",
+                    message: "Git Flag:",
+                    type: "input",
+                });
+                let argv: string = request_argv.data;
+
+                console.log(`git commit -m "${commitbuffer["type"]}(${commitbuffer["scope"]}): ${message}" ${argv}`);
+
+
+                
+            } catch(err) {
+                PMC_Error.RunTime(`${err}`);
+            }
+
+            break;
+        }
+        default: {
+            const response = await fetch(`http://localhost:${process.env.PORT}/cmd_${s_token.command}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(s_token),
+            });
+
+            if(response.status != 200) PMC_Error.RunTime(`Error on executing "${s_token.command}"`);
+            const data = await response.text();
+            console.log(data);
+
+            break;
+        }
+    }
 }
 Main(args_lexer(process.argv));
 
@@ -117,4 +189,13 @@ function args_parse(args: Token[]): StructuredToken {
     }
             
     return temp;
+}
+
+async function run_git(gitpath: string): Promise<boolean> {
+    const { exec } = await import("child_process");
+    const { promisify } = await import("util");
+    const execPromise = promisify(exec);
+
+    const { stderr } = await execPromise(`"${gitpath}\\git.exe" --version`);
+    return !stderr;
 }
