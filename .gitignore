@@ -1,6 +1,12 @@
-dist
-node_modules
+# Misc
 bin
-test
-temp
+dist
 .vscode
+
+# Server
+server/incl/httplib.h
+server/incl/json.hpp
+
+# Client
+node_modules
+temp

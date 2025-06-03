@@ -50,3 +50,12 @@ export interface GITCONFIGJSON {
     types: GitType[];
     git_cmd: string | null;
 }
+
+export interface PROJECTLISTJSON {
+    printedName: string;
+    id: string;
+    path: string;
+    langauge: string[];
+    author: string;
+    type: "git" | "local";
+}

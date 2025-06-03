@@ -12,7 +12,7 @@ const parsedEnv = parse(envBuffer);
 for (const key in parsedEnv) process.env[key] = parsedEnv[key];
 if(process.env.PORT == undefined) PMC_Error.RunTime("Undefined Server Port");
 
-import { CLI, Token, TokenType, StructuredToken, KeyValue, GITCONFIGJSON } from "./pmc.types";
+import { CLI, Token, TokenType, StructuredToken, GITCONFIGJSON, PROJECTLISTJSON } from "./pmc.types";
 import { Commands } from "./pmc.cmd";
 
 async function Main(args: Token[]): Promise<void> {
@@ -21,6 +21,17 @@ async function Main(args: Token[]): Promise<void> {
     const cli: CLI = require("inquirer");
     switch (s_token.command) {
         case "new": {
+            
+            const request = await fetch(`http://localhost:${process.env.PORT}/cmd_new`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(s_token),
+            });
+
+            const data = await ((request.status == 200) ? request.json() : request.text());
+            if(request.status != 200) PMC_Error.RunTime(data);
 
         }
 
@@ -81,6 +92,7 @@ async function Main(args: Token[]): Promise<void> {
                 });
                 let argv: string = request_argv.data;
 
+                //TODO: GIT COMMIT
                 console.log(`git commit -m "${commitbuffer["type"]}(${commitbuffer["scope"]}): ${message}" ${argv}`);
 
 
